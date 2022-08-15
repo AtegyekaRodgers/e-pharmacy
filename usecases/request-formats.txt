@@ -1,0 +1,486 @@
+
+//==================================create Invoice==========================================
+{
+  customer: {},
+  customerid: 28,
+  createdby: 12,
+  orders: [{},{},{}]
+}
+
+//==================================create Bill=============================================
+{
+  customer: {},
+  customerid: 10
+  invoices: "20, 15, 60, 22"
+  createdby: 19
+  orders: [{},{},{}]
+}
+
+//==================================create Payment===========================================
+
+//----------------------------------------------
+CASE: (13) (customer does not exist, new customer info given, an order in the request, item=order)
+
+{
+  customer: {firstname:"Robert", lastname:"Green", phone:"+256781224508", ...},
+  amount: 4000,
+  item:order,
+  //itemid: xxx       (get after creating the order)
+  createdby: 30
+  order: {
+      //customer: {},      (ignore while creating this order)
+      //customerid         (edit/attach after creating this payment and hence getting new customer ID)
+      item:"product",
+      itemid: 12,
+      quantity:3,
+      status:"served"
+      //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+      //visit:       (beyond MVP scope)
+      //visitid:     (beyond MVP scope)
+      //createdby:   (use this payment's "createdby" above)
+  }
+}
+
+//----------------------------------------------
+CASE: (14) (customer does not exist, new customer info given, an order in the request, item=invoice)
+
+{
+  customer: {firstname:"Robert", lastname:"Green", phone:"+256781224508", ...},
+  amount: 4000,
+  item:invoice,
+  //itemid: xxx       (get after creating the invoice)
+  createdby: 30
+  invoice: {
+      //amount: xxx        (assume the payment amount above is the invoice amount. will improve after MVP)
+      //customer: {},      (ignore while creating this invoice)
+      //customerid         (ignore on creation of this invoice, edit after creating this payment and hence getting new customer ID)                           
+      //createdby:         (use this payment's "createdby" above)
+      //status: "paid",    (set from backend before creating this invoice. ie, dont receive it from client)
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 9,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 21,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+}
+
+//----------------------------------------------
+CASE: (15) (customer does not exist, new customer info given, an order in the request, item=bill)
+
+{
+  customer: {firstname:"Robert", lastname:"Green", phone:"+256781224508", ...},
+  amount: 4000,
+  item:bill,
+  //itemid: xxx       (get after creating the bill)
+  createdby: 30
+  bill: {
+      //amount: xxx        (assume the payment amount above is the bill amount. will improve after MVP)
+      //customer: {},      (ignore while creating this bill)
+      //customerid         (ignore on creation of this bill, edit after creating this payment and hence getting new customer ID)
+      //status: "paid",    (set from backend before creating this bill. ie, dont receive it from client)
+      //createdby:         (use this payment's "createdby" above)
+      invoices: "34, 11, ..."
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 9,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (attach after creating this payment and hence getting new customer ID)
+          item:"product",
+          itemid: 21,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+    
+//----------------------------------------------
+CASE: (9) (customer does not exist, new customer info given, no order in the request, item=order)
+
+{
+  customer: {firstname:"Robert", lastname:"Green", phone:"+256781224508", ...},
+  amount: 4000,
+  item:order,
+  itemid: 15       (required)
+  createdby: 30
+}
+
+after save: update target order's status to "served" and paid=true
+
+//----------------------------------------------
+CASE: (5) (customer does not exist, no new customer info given, an order in the request, item=order)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  amount: 4000,
+  item:order,
+  //itemid: xxx       (get after creating the order)
+  createdby: 30
+  order: {
+      //customer: {},      (ignore while creating this order)
+      //customerid         (ignore while creating this order)
+      item:"product",
+      itemid: 12,
+      quantity:3,
+      status:"served"
+      //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+      //visit:       (beyond MVP scope)
+      //visitid:     (beyond MVP scope)
+      //createdby:   (use this payment's "createdby" above)
+  }
+}
+
+//----------------------------------------------
+CASE: (6) (customer does not exist, no new customer info given, an order in the request, item=invoice)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  amount: 4000,
+  item:invoice,
+  //itemid: xxx       (get after creating the invoice)
+  createdby: 30
+  invoice: {
+      //amount: xxx        (assume the payment amount above is the invoice amount. will improve after MVP)
+      //customer: {},      (ignore while creating this invoice)
+      //customerid         (ignore on creation of this invoice, edit after creating this payment and hence getting new customer ID)                           
+      //createdby:         (use this payment's "createdby" above)
+      //status: "paid",    (set from backend before creating this invoice. ie, dont receive it from client)
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 9,
+          quantity:3,
+          status:"served" 
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 21,
+          quantity:3,
+          status:"served" 
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+}
+
+//----------------------------------------------
+CASE: (7) (customer does not exist, no new customer info given, an order in the request, item=bill)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  amount: 4000,
+  item:bill,
+  //itemid: xxx       (get after creating the bill)
+  createdby: 30
+  bill: {
+      //amount: xxx        (assume the payment amount above is the bill amount. will improve after MVP)
+      //customer: {},      (ignore while creating this bill)
+      //customerid         (ignore on creation of this bill, edit after creating this payment and hence getting new customer ID)
+      //status: "paid",    (set from backend before creating this bill. ie, dont receive it from client)
+      //createdby:         (use this payment's "createdby" above)
+      invoices: "34, 11, ..."
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 9,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (ignore while creating this order)
+          item:"product",
+          itemid: 21,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+
+//----------------------------------------------
+CASE: (21) (customer exists, no new customer info given, an order in the request, item=order)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  customerid         (required)
+  amount: 4000,
+  item:order,
+  //itemid: xxx       (get after creating the order)
+  createdby: 30
+  order: {
+      //customer: {},      (ignore while creating this order)
+      //customerid         (use this payment's "customerid" above)
+      item:"product",
+      itemid: 12,
+      quantity:3,
+      status:"served"
+      //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+      //visit:       (beyond MVP scope)
+      //visitid:     (beyond MVP scope)
+      //createdby:   (use this payment's "createdby" above)
+  }
+}
+
+//----------------------------------------------
+CASE: (22) (customer exists, no new customer info given, an order in the request, item=invoice)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  customerid         (required)
+  amount: 4000,
+  item:invoice,
+  //itemid: xxx       (get after creating the invoice)
+  createdby: 30
+  invoice: {
+      //amount: xxx        (assume the payment amount above is the invoice amount. will improve after MVP)
+      //customer: {},      (ignore while creating this invoice)
+      //customerid         (use this payment's "customerid" above)                           
+      //createdby:         (use this payment's "createdby" above)
+      //status: "paid",    (set from backend before creating this invoice. ie, dont receive it from client)
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"product",
+          itemid: 9,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"product",
+          itemid: 21,
+          quantity:3,
+          status:"served"
+          //paid:true,   (set from backend before creating this invoice. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+}
+
+//----------------------------------------------
+CASE: (23) (customer exists, no new customer info given, an order in the request, item=bill)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  customerid         (required)
+  amount: 4000,
+  item:bill,
+  //itemid: xxx       (get after creating the bill)
+  createdby: 30
+  bill: {
+      //amount: xxx        (assume the payment amount above is the bill amount. will improve after MVP)
+      //customer: {},      (ignore while creating this bill)
+      //customerid         (use this payment's "customerid" above)
+      //status: "paid",    (set from backend before creating this bill. ie, dont receive it from client)
+      //createdby:         (use this payment's "createdby" above)
+      invoices: "34, 11, ..."
+      orders: [{
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"product",
+          itemid: 12,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"package",
+          itemid: 9,
+          quantity:3,
+          //status:"billed"  (set from backend before creating this bill. ie, dont receive it from client)
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        },
+        {
+          //customer: {},      (ignore while creating this order)
+          //customerid         (use this payment's "customerid" above)
+          item:"service",
+          itemid: 21,
+          quantity:3,
+          status: "billed"
+          //paid:true,   (set from backend before creating this bill. ie, dont receive it from client)
+          //visit:       (beyond MVP scope)
+          //visitid:     (beyond MVP scope)
+          //createdby:   (use this payment's "createdby" above)
+        }
+      ]
+    }
+    
+//----------------------------------------------
+CASE: (17) (customer exists, no new customer info given, no order in the request, item=order)
+
+{
+  //customer: {},     (ignore while creating this payment)
+  customerid         (required)
+  amount: 4000,
+  item:order,
+  itemid: 15       (required)
+  createdby: 30
+}
+
+after save: update target order's status to "served" and paid=true
+
+//----------------------------------------------
+
+
+//===============================================Stock transaction=================================================
+
+{
+  transasction:"add",
+  productCategory:"soda",
+  productid: 67,
+  oldQuantity:700,
+  quantity: 200,
+  newQuantity: 900,
+  returned:false,
+  createdby: 9
+}
+
+{
+  transasction:"remove",
+  productCategory:"soda crates",
+  productid: 37,
+  oldQuantity:60,
+  quantity: 35,
+  newQuantity: 25,
+  createdby: 9
+}
+
+//=================================================================================================================
+
+
+
+
+
+
+
+
+
+
